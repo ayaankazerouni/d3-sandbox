@@ -1,0 +1,48 @@
+<!DOCTYPE html> 
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+	<title>D3 Template</title>
+	<script src="https://d3js.org/d3.v4.min.js"></script>
+	<style type="text/css">
+		.bar {
+			fill: maroon;
+			stroke: none;
+			width: 13px;
+		}
+
+    .highlight {
+      fill: orange;
+    }
+	</style>
+</head>
+<body>
+	<svg width="800" height="500" style="border:1px solid black">
+    <text id="details" x="10" y="15" />
+  </svg>
+  <script type='text/javascript'>
+    const svg = d3.select('svg');
+    const height = svg.attr('height');
+
+    d3.csv('states.csv', (data) => {
+      svg.selectAll('rect').data(data)
+          .enter()
+          .append('rect')
+          .attr('class', 'bar')
+          .attr('x', (d, i) => i * 15)
+          .attr('y', (d) => height - (d.CollegeGrad * 10))
+          .attr('height', (d) => d.CollegeGrad * 10)
+          .on('mouseover', (d, i, nodes) => {
+            d3.select(nodes[i]).classed('highlight', true);
+            const name = d.Name;
+            d3.select('#details').html(`${d.Name} ${d.CollegeGrad}`)
+          })
+          .on('mouseout', (d, i, nodes) => {
+            d3.select(nodes[i]).classed('highlight', false);
+            d3.select('#details').html('');
+          });
+    });
+    
+  </script>
+</body>
+</html>

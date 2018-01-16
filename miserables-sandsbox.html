@@ -1,0 +1,55 @@
+<!DOCTYPE html> 
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+	<title>D3 Template</title>
+	<script src="https://d3js.org/d3.v4.min.js"></script>
+	<style type="text/css">
+    line {
+      stroke: gray;
+      stroke-width: 1px;
+      z-index: 1;
+    }
+	</style>
+</head>
+<body>
+	<svg width="800" height="600" style="border:1px solid black">
+    <text id="details" x="10" y="15" />
+  </svg>
+  <script type='text/javascript'>
+    const svg = d3.select('svg');
+    const height = svg.attr('height');
+    const width = svg.attr('width');
+
+    d3.json('miserables.json', (err, graph) => {
+      if (err) throw err;
+
+      const force = d3.forceSimulation(graph.nodes)
+        .force("spring", 
+          d3.forceLink(graph.links)
+            .id((v) => v.id))
+        .force("repel", d3.forceManyBody())
+        .force("gravity", d3.forceCenter(width / 2, height / 2))
+        .on("tick", ticked);
+
+      function ticked() {
+        svg.selectAll('line')
+          .data(graph.links)
+            .attr('x1', (e) => e.source.x)
+            .attr('y1', (e) => e.source.y)
+            .attr('x2', (e) => e.target.x)
+            .attr('y2', (e) => e.target.y)
+          .enter().append('line');
+        
+        svg.selectAll('circle')
+          .data(graph.nodes)
+            .attr('cx', (v) => v.x)
+            .attr('cy', (v) => v.y)
+          .enter().append('circle')
+            .attr('r', 5);
+      }
+    });
+    
+  </script>
+</body>
+</html>
